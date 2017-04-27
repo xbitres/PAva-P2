@@ -38,7 +38,7 @@
 )
 
 (defun generate-recognizer (nome atributes)
-  `(defun ,(make-symbol-recognizer nome) (value) (typep value 'vector))
+  `(defun ,(make-symbol-recognizer nome) (value) (and (typep value 'vector) (= ,(length atributes) (length value))))
 )
 
 ;;;
