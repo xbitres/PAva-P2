@@ -1,3 +1,8 @@
+;;;
+;
+; Symbol constructors
+;
+;;;
 (defun make-symbol-constructor (nome)
   (intern (concatenate 'string "MAKE-" (symbol-name nome)))
 )
@@ -6,7 +11,11 @@
   (intern (concatenate 'string (symbol-name nome-classe) "-" (symbol-name parametro)))
 )
 
-(pprint (macroexpand-1 `(make-symbol-name person)))
+;;;
+;
+; Def-class helpers
+;
+;;;
 
 (defun generate-constructor (nome arguments)
   `(defun ,(make-symbol-constructor nome) (&key ,@arguments) (vector ,@arguments))
@@ -25,8 +34,11 @@
   )
 )
 
-
-(pprint (macroexpand-1 `(generate-constructor person (nome idade))))
+;;;
+;
+; def-class definition
+;
+;;;
 
 (defmacro def-class (nome &body atributes)
   `(progn
