@@ -8,15 +8,16 @@
 
 (pprint (macroexpand-1 `(make-symbol-name person)))
 
-(defmacro generate-constructor (nome arguments)
+(defun generate-constructor (nome arguments)
   `(defun ,(make-symbol-constructor nome) (&key ,@arguments) (vector ,@arguments))
 )
+
 
 (pprint (macroexpand-1 `(generate-constructor person (nome idade))))
 
 (defmacro def-class (nome &body atributes)
   `(progn
-      (defun ,(make-symbol-constructor nome) (&key ,@atributes) (vector ,@atributes))
+      ,(generate-constructor nome atributes)
       ,@(let (
               (functions '())
               (parm-i 0)
