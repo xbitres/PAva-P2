@@ -1,9 +1,10 @@
+(setf classInfo (make-hash-table))
+
 ;;;
 ;
 ; Symbol constructors
 ;
 ;;;
-(setf classInfo (make-hash-table))
 
 (defun make-symbol-constructor (nome)
   (intern (concatenate 'string "MAKE-" (symbol-name nome)))
