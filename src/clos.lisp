@@ -3,6 +3,8 @@
 ; Symbol constructors
 ;
 ;;;
+(setf classInfo (make-hash-table))
+
 (defun make-symbol-constructor (nome)
   (intern (concatenate 'string "MAKE-" (symbol-name nome)))
 )
@@ -14,6 +16,7 @@
 (defun make-symbol-recognizer (nome)
   (intern (concatenate 'string (symbol-name nome) "?"))
 )
+
 ;;;
 ;
 ; Def-class helpers
@@ -41,6 +44,10 @@
   `(defun ,(make-symbol-recognizer nome) (value) (and (typep value 'vector) (= ,(length atributes) (length value))))
 )
 
+(defun registar-class-arguments (nome atributes)
+  (setf (gethash nome classInfo) atributes)
+)
+
 ;;;
 ;
 ; def-class definition
@@ -48,6 +55,7 @@
 ;;;
 
 (defmacro def-class (nome &body atributes)
+  (registar-class-arguments nome atributes)
   `(progn
       ,(generate-constructor nome atributes)
       ,@(generate-getters nome atributes)
