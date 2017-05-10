@@ -45,8 +45,11 @@
   `(defun ,(make-symbol-recognizer nome) (value) (and (typep value 'vector) (= ,(length atributes) (length value))))
 )
 
-(defun registar-class-arguments (nome atributes)
-  (setf (gethash nome classInfo) atributes)
+(defun registar-class-info (nome atributes offsets)
+  (setf (gethash nome classInfo) (make-hash-table))
+  (setf (gethash 'atributes (gethash nome classInfo)) atributes)
+  (setf (gethash 'offsets (gethash nome classInfo)) offsets)
+  (setf (gethash nome (gethash 'offsets (gethash nome classInfo))) 0)
 )
 
 ;;;
@@ -56,12 +59,24 @@
 ;;;
 
 (defmacro def-class (nome &body atributes)
-  (registar-class-arguments nome atributes)
-  `(progn
-      ,(generate-constructor nome atributes)
-      ,@(generate-getters nome atributes)
-      ,(generate-recognizer nome atributes)
+  (let ((nomeClass nome)
+        (atributesClass atributes)
+        (offsets (make-hash-table)))
+      (if (listp nome)
+          (progn
+            (setf nomeClass (car nome))
+            (setf atributesClass (append '() (gethash 'atributes (gethash (car (cdr nome)) classInfo)) atributes))
+            (setf (gethash (car (cdr nome)) offsets) 0)
+          )
+      )
+      (registar-class-info nomeClass atributesClass offsets)
+      `(progn
+          ,(generate-constructor nomeClass atributesClass)
+          ,@(generate-getters nomeClass atributesClass)
+          ,(generate-recognizer nomeClass atributesClass)
+        )
     )
 )
 
 (pprint (macroexpand-1 `(def-class person nome idade)))
+(pprint (macroexpand-1 `(def-class (student person) grades)))
