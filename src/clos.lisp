@@ -52,6 +52,17 @@
   (setf (gethash nome (gethash 'offsets (gethash nome classInfo))) 0)
 )
 
+(defun calculate-offsets (nomeClass classes)
+  (let (
+      (offset 0)
+     )
+    (loop for class in classes do
+      (setf (gethash nomeClass (gethash class classInfo)) offset)
+      (setf offset (+ (list-length (gethash 'atributes (gethash class classInfo))) offset))
+    )
+  )
+)
+
 ;;;
 ;
 ; def-class definition
@@ -70,6 +81,9 @@
           )
       )
       (registar-class-info nomeClass atributesClass offsets)
+      (if (listp nome)
+        (calculate-offsets nomeClass (cdr nome))
+      )
       `(progn
           ,(generate-constructor nomeClass atributesClass)
           ,@(generate-getters nomeClass atributesClass)
@@ -79,4 +93,7 @@
 )
 
 (pprint (macroexpand-1 `(def-class person nome idade)))
-(pprint (macroexpand-1 `(def-class (student person) grades)))
+(pprint (macroexpand-1 `(def-class worker hours)))
+(pprint (macroexpand-1 `(def-class stuworker coffee redbull)))
+(pprint (macroexpand-1 `(def-class (student person worker stuworker) grades)))
+(pprint (macroexpand-1 `(def-class (studentPro student) sallary)))
