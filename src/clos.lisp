@@ -63,6 +63,15 @@
   )
 )
 
+(defun calculate-atributes (atributes classes)
+  (let ((atri '()))
+    (loop for class in classes do
+      (setf atri (append atri (gethash 'atributes (gethash class classInfo))))
+    )
+    (append atri atributes)
+  )
+)
+
 ;;;
 ;
 ; def-class definition
@@ -76,7 +85,7 @@
       (if (listp nome)
           (progn
             (setf nomeClass (car nome))
-            (setf atributesClass (append '() (gethash 'atributes (gethash (car (cdr nome)) classInfo)) atributes))
+            (setf atributesClass (calculate-atributes atributes (cdr nome)))
             (setf (gethash (car (cdr nome)) offsets) 0)
           )
       )
