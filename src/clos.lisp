@@ -60,7 +60,15 @@
         (parm-i 1)
        )
     (loop for param in atributes do
-      (setf functions (append functions (list `(defun ,(make-symbol-getters nome param) (person) (aref person ,parm-i))) ))
+      (setf functions (append functions (list
+        `(defun ,(make-symbol-getters nome param) (class)
+          (let ((offset (gethash (aref class 0) (gethash 'offsets (gethash ',nome classInfo)))))
+            (if (not (eq nil offset))
+              (aref class (+ ,parm-i offset))
+            )
+          )
+         )
+        )))
       (setf parm-i (+ parm-i 1))
     )
     functions
@@ -90,7 +98,7 @@
   (setf (gethash nome classInfo) (make-hash-table))
   (setf (gethash 'atributes (gethash nome classInfo)) atributes)
   (setf (gethash 'offsets (gethash nome classInfo)) offsets)
-  (setf (gethash nome (gethash 'offsets (gethash nome classInfo))) 1)
+  (setf (gethash nome (gethash 'offsets (gethash nome classInfo))) 0)
   (setf (gethash 'superclasses (gethash nome classInfo)) superClasses)
   (setf (gethash 'subclasses (gethash nome classInfo)) '())
   (mapcar #'(lambda (class) (setf (gethash 'subclasses (gethash class classInfo)) (append (list nome) (gethash 'subclasses (gethash class classInfo)) ))) superClasses)
@@ -98,7 +106,7 @@
 
 (defun calculate-offsets (nomeClass classes)
   (let (
-      (offset 1)
+      (offset 0)
      )
     (loop for class in classes do
       (setf (gethash nomeClass (gethash 'offsets (gethash class classInfo))) offset)
@@ -147,8 +155,8 @@
     )
 )
 
-(pprint (macroexpand-1 `(def-class person nome idade)))
-(pprint (macroexpand-1 `(def-class worker hours)))
-(pprint (macroexpand-1 `(def-class stuworker coffee redbull)))
-(pprint (macroexpand-1 `(def-class (student person worker stuworker) grades)))
-(pprint (macroexpand-1 `(def-class (studentPro student) sallary)))
+;(pprint (macroexpand-1 `(def-class person nome idade)))
+;(pprint (macroexpand-1 `(def-class worker hours)))
+;(pprint (macroexpand-1 `(def-class stuworker coffee redbull)))
+;(pprint (macroexpand-1 `(def-class (student person worker stuworker) grades)))
+;(pprint (macroexpand-1 `(def-class (studentPro student) sallary)))
