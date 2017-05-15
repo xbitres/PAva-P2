@@ -104,7 +104,23 @@
   (mapcar #'(lambda (class) (setf (gethash 'subclasses (gethash class classInfo)) (append (list nome) (gethash 'subclasses (gethash class classInfo)) ))) superClasses)
 )
 
+(defun inherit-offsets (nomeClass superClasses)
+  (mapcar #'(lambda (class) ; Transverse superClasses to be inherited
+    (maphash #'(lambda (generalClass value) ; Transverse all classes in classInfo
+      ;(maphash #'(lambda (offsetSymbol offsetValues) ; Transverse all offsets for said class
+        ;(if (gethash class value)
+      ;    (progn (print offsetSymbol) (print offsetValues))
+        ;)
+      ;) (gethash 'offsets value))
+      (if (gethash class (gethash 'offsets value))
+        (setf (gethash nomeclass (gethash 'offsets value)) (gethash class (gethash 'offsets value)))
+      )
+    ) classInfo)
+  ) superClasses)
+)
+
 (defun calculate-offsets (nomeClass classes)
+  (inherit-offsets nomeClass classes)
   (let (
       (offset 0)
      )
