@@ -13,7 +13,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; HashTable que servira para guardar todas as infromacoes relevantes acerca das classes
-(setf classInfo (make-hash-table))
+(defparameter classInfo (make-hash-table))
 
 
 ;;;	registar-class-info: nome atributos offsets superCLasses
@@ -31,11 +31,6 @@
 (defun inherit-offsets (nomeClass superClasses)
   (mapcar #'(lambda (class) ; Transverse superClasses to be inherited
     (maphash #'(lambda (generalClass value) ; Transverse all classes in classInfo
-      ;(maphash #'(lambda (offsetSymbol offsetValues) ; Transverse all offsets for said class
-        ;(if (gethash class value)
-      ;    (progn (print offsetSymbol) (print offsetValues))
-        ;)
-      ;) (gethash 'offsets value))
       (if (gethash class (gethash 'offsets value))
         (setf (gethash nomeclass (gethash 'offsets value)) (gethash class (gethash 'offsets value)))
       )
@@ -146,7 +141,7 @@
   )
 )
 
-(defun generate-recognizer? (nome atributes)
+(defun generate-recognizer? (nome)
   `(defun ,(make-symbol-recognizer? nome) (value)
     (cond ((and (typep value 'vector) (>= (length value) 1) (eq (aref value 0) ',nome)) t)
           (t (let ((subclassesToCall (mapcar #'(lambda (class) (make-symbol-recognizer? class)) (get-class-subclasses ',nome)))
@@ -194,7 +189,7 @@
       `(progn
           ,(generate-constructor nomeClass atributesClass)
           ,@(generate-getters nomeClass atributesClass)
-          ,(generate-recognizer? nomeClass atributesClass)
+          ,(generate-recognizer? nomeClass)
         )
     )
 )
