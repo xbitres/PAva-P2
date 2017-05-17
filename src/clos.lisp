@@ -194,9 +194,3 @@
         )
     )
 )
-
-;(pprint (macroexpand-1 `(def-class person nome idade)))
-;(pprint (macroexpand-1 `(def-class worker hours)))
-;(pprint (macroexpand-1 `(def-class stuworker coffee redbull)))
-;(pprint (macroexpand-1 `(def-class (student person worker stuworker) grades)))
-;(pprint (macroexpand-1 `(def-class (studentPro student) sallary)))
