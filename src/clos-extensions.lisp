@@ -162,6 +162,31 @@
    )
 )
 
+(defun make-symbol-setters (nome-classe parametro)
+  (intern (concatenate 'string (symbol-name nome-classe) "-" (symbol-name parametro) "!"))
+)
+
+(defun generate-setters (nome atributes)
+  (let (
+        (functions '())
+        (parm-i 1)
+       )
+    (loop for param in atributes do
+      (setf functions (append functions (list
+        `(defun ,(make-symbol-setters nome param) (class param)
+          (let ((offset (gethash (aref class 0) (gethash 'offsets (gethash ',nome classInfo)))))
+            (if (not (eq nil offset))
+              (setf (aref class (+ ,parm-i offset)) param)
+            )
+          )
+         )
+        )))
+      (setf parm-i (+ parm-i 1))
+    )
+    functions
+  )
+)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; 						                         	  ;;;
 ;;;	Macro Definition	  				                  ;;;
@@ -190,7 +215,15 @@
       `(progn
           ,(generate-constructor nomeClass atributesClass)
           ,@(generate-getters nomeClass atributesClass)
+          ,@(generate-setters nomeClass atributesClass)
           ,(generate-recognizer? nomeClass)
         )
     )
 )
+
+
+(pprint (macroexpand-1 `(def-class person nome idade)))
+;(pprint (macroexpand-1 `(def-class worker hours)))
+;(pprint (macroexpand-1 `(def-class stuworker coffee redbull)))
+;(pprint (macroexpand-1 `(def-class (student person worker stuworker) grades)))
+;(pprint (macroexpand-1 `(def-class (studentPro student) sallary)))
