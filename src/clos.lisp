@@ -16,9 +16,9 @@
 (defparameter classInfo (make-hash-table))
 
 
-;;;	registar-class-info: nome atributos offsets superCLasses
+;;;	register-class-info: nome atributos offsets superCLasses
 ;;;	Esta funcao regista na tablea o nome, atributos, offsets e superClasses
-(defun registar-class-info (nome atributes offsets superClasses)
+(defun register-class-info (nome atributes offsets superClasses)
   (setf (gethash nome classInfo) (make-hash-table))
   (setf (gethash 'atributes (gethash nome classInfo)) atributes)
   (setf (gethash 'offsets (gethash nome classInfo)) offsets)
@@ -26,6 +26,49 @@
   (setf (gethash 'superclasses (gethash nome classInfo)) superClasses)
   (setf (gethash 'subclasses (gethash nome classInfo)) '())
   (mapcar #'(lambda (class) (setf (gethash 'subclasses (gethash class classInfo)) (append (list nome) (gethash 'subclasses (gethash class classInfo)) ))) superClasses)
+)
+
+
+(defun calculate-attributes (atributes classes)
+  (let ((atri '()))
+    (loop for class in classes do
+      (setf atri (append atri (gethash 'atributes (gethash class classInfo))))
+    )
+    (append atri atributes)
+  )
+)
+
+;;; get-class-superclasses: class -> lista de superclasses
+;;; Esta funcao recebe uma classe, e atraves da informacao na hashtable,
+;;; retorna uma lista com todas as superclasses da classe recebida
+(defun get-class-superclasses (class)
+  (let ((superclassesToExplore (gethash 'superclasses (gethash class classInfo)))
+        (superclasses '()))
+
+    (loop while (not (eq nil superclassesToExplore))
+      do
+      (setf superclasses (append superclasses (list (car superclassesToExplore))))
+      (setf superclassesToExplore (cdr superclassesToExplore))
+    )
+    superclasses
+  )
+)
+
+
+;;; get-class-subclasses: class -> lista de superclasses
+;;; Esta funcao recebe uma classe, e atraves da informacao na hashtable,
+;;; retorna uma lista com todas as subclasses da classe recebida
+(defun get-class-subclasses (class)
+  (let ((subclassesToExplore (gethash 'subclasses (gethash class classInfo)))
+        (subclasses '()))
+
+    (loop while (not (eq nil subclassesToExplore))
+      do
+      (setf subclasses (append subclasses (list (car subclassesToExplore))))
+      (setf subclassesToExplore (cdr subclassesToExplore))
+    )
+    subclasses
+  )
 )
 
 (defun inherit-offsets (nomeClass superClasses)
@@ -50,47 +93,6 @@
   )
 )
 
-(defun calculate-atributes (atributes classes)
-  (let ((atri '()))
-    (loop for class in classes do
-      (setf atri (append atri (gethash 'atributes (gethash class classInfo))))
-    )
-    (append atri atributes)
-  )
-)
-
-;;;	get-class-superclasses: class -> lista de superclasses
-;;;	Esta funcao recebe uma classe, e atraves da informacao na hashtable,
-;;;	retorna uma lista com todas as superclasses da classe recebida
-(defun get-class-superclasses (class)
-  (let ((superclassesToExplore (gethash 'superclasses (gethash class classInfo)))
-        (superclasses '()))
-
-    (loop while (not (eq nil superclassesToExplore))
-      do
-      (setf superclasses (append superclasses (list (car superclassesToExplore))))
-      (setf superclassesToExplore (cdr superclassesToExplore))
-    )
-    superclasses
-  )
-)
-
-
-;;;	get-class-subclasses: class -> lista de superclasses
-;;;	Esta funcao recebe uma classe, e atraves da informacao na hashtable,
-;;;	retorna uma lista com todas as subclasses da classe recebida
-(defun get-class-subclasses (class)
-  (let ((subclassesToExplore (gethash 'subclasses (gethash class classInfo)))
-        (subclasses '()))
-
-    (loop while (not (eq nil subclassesToExplore))
-      do
-      (setf subclasses (append subclasses (list (car subclassesToExplore))))
-      (setf subclassesToExplore (cdr subclassesToExplore))
-    )
-    subclasses
-  )
-)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; 						                         	  ;;;
@@ -178,10 +180,10 @@
           (progn
             (setf superClasses (cdr nome))
             (setf nomeClass (car nome))
-            (setf atributesClass (calculate-atributes atributes superClasses))
+            (setf atributesClass (calculate-attributes atributes superClasses))
           )
       )
-      (registar-class-info nomeClass atributesClass offsets superClasses)
+      (register-class-info nomeClass atributesClass offsets superClasses)
       (if (listp nome)
         (calculate-offsets nomeClass superClasses)
       )
