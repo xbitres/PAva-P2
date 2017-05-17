@@ -179,7 +179,6 @@
             (setf superClasses (cdr nome))
             (setf nomeClass (car nome))
             (setf atributesClass (calculate-atributes atributes superClasses))
-            (setf (gethash (car superClasses) offsets) 0)
           )
       )
       (registar-class-info nomeClass atributesClass offsets superClasses)
