@@ -119,7 +119,7 @@
         (functions '())
         (parm-i 1)
        )
-    (loop for param in atributes do
+    (mapcar #'(lambda (param)
       (setf functions (append functions (list
         `(defun ,(make-symbol-getters nome param) (class)
           (let ((offset (gethash (aref class 0) (gethash 'offsets (gethash ',nome classInfo)))))
@@ -130,7 +130,7 @@
          )
         )))
       (setf parm-i (+ parm-i 1))
-    )
+    ) atributes)
     functions
   )
 )
@@ -140,9 +140,9 @@
         (functions '())
         (parm-i 1)
        )
-    (loop for param in atributes do
+    (mapcar #'(lambda (param)
       (setf functions (append functions (list
-        `(defun ,(make-symbol-setters nome param) (class param)
+        `(defun ,(make-symbol-getters nome param) (class)
           (let ((offset (gethash (aref class 0) (gethash 'offsets (gethash ',nome classInfo)))))
             (if (not (eq nil offset))
               (setf (aref class (+ ,parm-i offset)) param)
@@ -151,11 +151,10 @@
          )
         )))
       (setf parm-i (+ parm-i 1))
-    )
+    ) atributes)
     functions
   )
 )
-
 
 (defun generate-recognizer (nome)
   `(defun ,(make-symbol-recognizer nome) (value)
