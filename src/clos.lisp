@@ -119,9 +119,9 @@
         (functions '())
         (parm-i 1)
        )
-    (mapcar #'(lambda (param)
+    (mapcar #'(lambda (atri)
       (setf functions (append functions (list
-        `(defun ,(make-symbol-getters nome param) (class)
+        `(defun ,(make-symbol-getters nome atri) (class)
           (let ((offset (gethash (aref class 0) (gethash 'offsets (gethash ',nome classInfo)))))
             (if (not (eq nil offset))
               (aref class (+ ,parm-i offset))
@@ -140,9 +140,9 @@
         (functions '())
         (parm-i 1)
        )
-    (mapcar #'(lambda (param)
+    (mapcar #'(lambda (atri)
       (setf functions (append functions (list
-        `(defun ,(make-symbol-getters nome param) (class)
+        `(defun ,(make-symbol-getters nome atri) (class)
           (let ((offset (gethash (aref class 0) (gethash 'offsets (gethash ',nome classInfo)))))
             (if (not (eq nil offset))
               (setf (aref class (+ ,parm-i offset)) param)
@@ -208,3 +208,6 @@
         )
     )
 )
+
+(pprint (macroexpand-1 `(def-class person nome idade)))
+(pprint (macroexpand-1 `(def-class (student person) grades)))
