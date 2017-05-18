@@ -108,7 +108,11 @@
   (intern (concatenate 'string (symbol-name nome-classe) "-" (symbol-name parametro)))
 )
 
-(defun make-symbol-recognizer? (nome)
+(defun make-symbol-setters (nome-classe parametro)
+  (intern (concatenate 'string (symbol-name nome-classe) "-" (symbol-name parametro) "!"))
+)
+
+(defun make-symbol-recognizer (nome)
   (intern (concatenate 'string (symbol-name nome) "?"))
 )
 
@@ -119,7 +123,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun generate-constructor (nome arguments)
-  `(defun ,(make-symbol-constructor nome) (&key ,@arguments) (vector ',nome ,@arguments))
+  `(defun ,(make-symbol-constructor nome) (&key ,@arguments)
+    (vector ',nome ,@arguments)
+  )
 )
 
 (defun generate-getters (nome atributes)
@@ -143,10 +149,32 @@
   )
 )
 
-(defun generate-recognizer? (nome)
-  `(defun ,(make-symbol-recognizer? nome) (value)
+(defun generate-setters (nome atributes)
+  (let (
+        (functions '())
+        (parm-i 1)
+       )
+    (loop for param in atributes do
+      (setf functions (append functions (list
+        `(defun ,(make-symbol-setters nome param) (class param)
+          (let ((offset (gethash (aref class 0) (gethash 'offsets (gethash ',nome classInfo)))))
+            (if (not (eq nil offset))
+              (setf (aref class (+ ,parm-i offset)) param)
+            )
+          )
+         )
+        )))
+      (setf parm-i (+ parm-i 1))
+    )
+    functions
+  )
+)
+
+
+(defun generate-recognizer (nome)
+  `(defun ,(make-symbol-recognizer nome) (value)
     (cond ((and (typep value 'vector) (>= (length value) 1) (eq (aref value 0) ',nome)) t)
-          (t (let ((subclassesToCall (mapcar #'(lambda (class) (make-symbol-recognizer? class)) (get-class-subclasses ',nome)))
+          (t (let ((subclassesToCall (mapcar #'(lambda (class) (make-symbol-recognizer class)) (get-class-subclasses ',nome)))
                    (res nil)
                   )
                 (loop while (not (eq nil subclassesToCall)) do
@@ -190,7 +218,8 @@
       `(progn
           ,(generate-constructor nomeClass atributesClass)
           ,@(generate-getters nomeClass atributesClass)
-          ,(generate-recognizer? nomeClass)
+          ,@(generate-setters nomeClass atributesClass)
+          ,(generate-recognizer nomeClass)
         )
     )
 )
