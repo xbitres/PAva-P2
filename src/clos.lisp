@@ -72,10 +72,10 @@
   (let (
       (offset 0)
      )
-    (loop for class in classes do
+    (mapcar #'(lambda (class)
       (setf (gethash nomeClass (gethash 'offsets (gethash class classInfo))) offset)
-      (setf offset (+ (list-length (gethash 'atributes (gethash class classInfo))) offset))
-    )
+      (setf offset (+ (list-length (gethash 'atributes (gethash class classInfo))) offset)))
+    classes)
   )
 )
 
