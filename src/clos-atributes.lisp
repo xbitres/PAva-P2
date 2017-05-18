@@ -215,7 +215,3 @@
         )
     )
 )
-
-(pprint (macroexpand-1 `(def-class person (nome "gui") idade)))
-
-(mapcar #'(lambda (arg) (if (listp arg) (car arg) arg))l )
