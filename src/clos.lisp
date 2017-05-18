@@ -71,7 +71,7 @@
   (inherit-offsets nomeClass classes)
   (let (
       (offset 0)
-     )
+    )
     (mapcar #'(lambda (class)
       (setf (gethash nomeClass (gethash 'offsets (gethash class classInfo))) offset)
       (setf offset (+ (list-length (gethash 'atributes (gethash class classInfo))) offset)))
@@ -109,8 +109,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun generate-constructor (nome arguments)
+
   `(defun ,(make-symbol-constructor nome) (&key ,@arguments)
-    (vector ',nome ,@arguments)
+    (vector ',nome ,@(mapcar #'(lambda (arg) (if (listp arg) (car arg) arg)) arguments))
   )
 )
 
@@ -120,6 +121,9 @@
         (parm-i 1)
        )
     (mapcar #'(lambda (atri)
+      (if (listp atri)
+        (setf atri (car atri))
+      )
       (setf functions (append functions (list
         `(defun ,(make-symbol-getters nome atri) (class)
           (let ((offset (gethash (aref class 0) (gethash 'offsets (gethash ',nome classInfo)))))
@@ -141,6 +145,9 @@
         (parm-i 1)
        )
     (mapcar #'(lambda (atri)
+      (if (listp atri)
+        (setf atri (car atri))
+      )
       (setf functions (append functions (list
         `(defun ,(make-symbol-setters nome atri) (class param)
           (let ((offset (gethash (aref class 0) (gethash 'offsets (gethash ',nome classInfo)))))
