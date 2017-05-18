@@ -16,3 +16,27 @@
 (student-nome! sp "Heranca")
 (student-nome sp) ; "Heranca"
 (person-nome sp) ; "Heranca"
+
+
+
+(def-class person
+name
+age)
+
+(def-class (student person)
+ course)
+
+(def-class sportsman
+activity
+schedule)
+
+(def-class (ist-student student sportsman))
+
+(setf p (make-person :name "Person" :age 51))
+(setf s (make-student :name "Paul" :age 21 :course "Informatics"))
+(setf i (make-ist-student :name "Maria" :course "IA" :activity "Tennis"))
+(person-name p) ;; Person
+(person-name! p "New Person") ;; New Person
+(student-name! p "Wont work") ;; NIL
+(student-age! s 25)	;;25
+(person-name! i "Maria Joao") ;; Maria Joao
