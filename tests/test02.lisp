@@ -20,3 +20,16 @@
 (person-nome sp) ; "T"
 (stuworker-redbull sp) ; 5
 (studentPro-redbull sp) ; 5
+
+(def-class person
+  name
+  age)
+
+(def-class (student person)
+  course)
+
+(def-class sportsman
+  activity
+  schedule)
+
+(def-class (ist-student student sportsman)) 

@@ -25,7 +25,10 @@
   (setf (gethash nome (gethash 'offsets (gethash nome classInfo))) 0)
   (setf (gethash 'superclasses (gethash nome classInfo)) superClasses)
   (setf (gethash 'subclasses (gethash nome classInfo)) '())
-  (mapcar #'(lambda (class) (setf (gethash 'subclasses (gethash class classInfo)) (append (list nome) (gethash 'subclasses (gethash class classInfo)) ))) superClasses)
+  (mapcar #'(lambda (class)
+    (setf (gethash 'subclasses (gethash class classInfo)) (append (list nome) (gethash 'subclasses (gethash class classInfo)) ))
+  )
+  superClasses)
 )
 
 
@@ -38,24 +41,7 @@
   )
 )
 
-;;; get-class-superclasses: class -> lista de superclasses
-;;; Esta funcao recebe uma classe, e atraves da informacao na hashtable,
-;;; retorna uma lista com todas as superclasses da classe recebida
-(defun get-class-superclasses (class)
-  (let ((superclassesToExplore (gethash 'superclasses (gethash class classInfo)))
-        (superclasses '()))
-
-    (loop while (not (eq nil superclassesToExplore))
-      do
-      (setf superclasses (append superclasses (list (car superclassesToExplore))))
-      (setf superclassesToExplore (cdr superclassesToExplore))
-    )
-    superclasses
-  )
-)
-
-
-;;; get-class-subclasses: class -> lista de superclasses
+;;; get-class-subclasses: class -> lista de subclasses
 ;;; Esta funcao recebe uma classe, e atraves da informacao na hashtable,
 ;;; retorna uma lista com todas as subclasses da classe recebida
 (defun get-class-subclasses (class)
