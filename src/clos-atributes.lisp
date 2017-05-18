@@ -109,9 +109,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun generate-constructor (nome arguments)
-  
+
   `(defun ,(make-symbol-constructor nome) (&key ,@arguments)
-    (vector ',nome ,@arguments)
+    (vector ',nome ,@(mapcar #'(lambda (arg) (if (listp arg) (car arg) arg)) arguments))
   )
 )
 
@@ -215,3 +215,7 @@
         )
     )
 )
+
+(pprint (macroexpand-1 `(def-class person (nome "gui") idade)))
+
+(mapcar #'(lambda (arg) (if (listp arg) (car arg) arg))l )
