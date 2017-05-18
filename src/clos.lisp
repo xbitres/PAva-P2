@@ -142,7 +142,7 @@
        )
     (mapcar #'(lambda (atri)
       (setf functions (append functions (list
-        `(defun ,(make-symbol-getters nome atri) (class)
+        `(defun ,(make-symbol-setters nome atri) (class param)
           (let ((offset (gethash (aref class 0) (gethash 'offsets (gethash ',nome classInfo)))))
             (if (not (eq nil offset))
               (setf (aref class (+ ,parm-i offset)) param)
