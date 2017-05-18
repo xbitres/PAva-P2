@@ -1,15 +1,15 @@
 ;;; Grupo 17 : Guilherme Ramos - 77916 , Goncalo Marques - 78016 , 86318	Aquilino Silva
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; 				Grupo 18 						  	  ;;;
+;;; 				Grupo 18 						  	                      ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; 						                         	  ;;;
-;;; HashTable Auxiliar e funcoes auxiliares  			  ;;;
-;;;														  ;;;
+;;; 						                         	                ;;;
+;;; HashTable Auxiliar e funcoes auxiliares  			        ;;;
+;;;														                            ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; HashTable que servira para guardar todas as infromacoes relevantes acerca das classes
@@ -34,9 +34,9 @@
 
 (defun calculate-attributes (atributes classes)
   (let ((atri '()))
-    (loop for class in classes do
-      (setf atri (append atri (gethash 'atributes (gethash class classInfo))))
-    )
+    (mapcar #'(lambda (class)
+        (setf atri (append atri (gethash 'atributes (gethash class classInfo)))))
+    classes)
     (append atri atributes)
   )
 )
