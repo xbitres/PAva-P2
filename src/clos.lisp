@@ -208,6 +208,3 @@
         )
     )
 )
-
-(pprint (macroexpand-1 `(def-class person nome idade)))
-(pprint (macroexpand-1 `(def-class (student person) grades)))
