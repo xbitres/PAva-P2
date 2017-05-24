@@ -109,7 +109,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun generate-constructor (nome arguments)
-
   `(defun ,(make-symbol-constructor nome) (&key ,@arguments)
     (vector ',nome ,@(mapcar #'(lambda (arg) (if (listp arg) (car arg) arg)) arguments))
   )
